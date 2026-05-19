@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir -p /Users/conoroneil/job-search-assistant/frontend/public)",
+      "Bash(touch /Users/conoroneil/job-search-assistant/frontend/public/.gitkeep)"
+    ]
+  }
+}
