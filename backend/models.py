@@ -12,7 +12,7 @@ class ProfileBase(BaseModel):
 
 
 class Profile(ProfileBase):
-    id: int
+    user_id: str
     updated_at: datetime
 
 
@@ -25,19 +25,19 @@ class StackMatch(BaseModel):
 
 class ExperienceFit(BaseModel):
     required_years: Optional[int]
-    seniority_level: str  # junior/mid/senior/staff/principal
-    fit_level: str        # strong/moderate/weak
+    seniority_level: str
+    fit_level: str
     notes: str
 
 
 class Gap(BaseModel):
     area: str
     description: str
-    severity: str  # critical/moderate/minor
+    severity: str
 
 
 class Verdict(BaseModel):
-    recommendation: str  # apply/consider/skip
+    recommendation: str
     confidence: int
     summary: str
     key_selling_points: list[str]

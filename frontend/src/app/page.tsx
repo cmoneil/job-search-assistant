@@ -2,11 +2,13 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useAuth } from "@clerk/nextjs";
 import { analyze } from "@/lib/api";
 import type { Analysis } from "@/lib/api";
 import AnalysisResult from "@/components/AnalysisResult";
 
 export default function AnalyzePage() {
+  const { getToken } = useAuth();
   const [jobDescription, setJobDescription] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<Analysis | null>(null);
@@ -19,7 +21,8 @@ export default function AnalyzePage() {
     setResult(null);
     setError(null);
     try {
-      const analysis = await analyze(jobDescription);
+      const token = await getToken();
+      const analysis = await analyze(jobDescription, token);
       setResult(analysis);
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Analysis failed";

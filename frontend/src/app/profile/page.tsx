@@ -1,23 +1,30 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useAuth } from "@clerk/nextjs";
 import ProfileForm from "@/components/ProfileForm";
 import { getProfile, saveProfile } from "@/lib/api";
 import type { Profile, ProfileInput } from "@/lib/api";
 
 export default function ProfilePage() {
+  const { getToken } = useAuth();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getProfile()
-      .then(setProfile)
-      .catch(() => setProfile(null))
-      .finally(() => setLoading(false));
-  }, []);
+    const load = async () => {
+      const token = await getToken();
+      getProfile(token)
+        .then(setProfile)
+        .catch(() => setProfile(null))
+        .finally(() => setLoading(false));
+    };
+    load();
+  }, [getToken]);
 
   async function handleSave(input: ProfileInput) {
-    const saved = await saveProfile(input);
+    const token = await getToken();
+    const saved = await saveProfile(input, token);
     setProfile(saved);
   }
 

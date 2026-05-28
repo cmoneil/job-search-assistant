@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useAuth } from "@clerk/nextjs";
 import { getAnalyses } from "@/lib/api";
 import type { Analysis } from "@/lib/api";
 import AnalysisResult from "@/components/AnalysisResult";
@@ -12,16 +13,21 @@ const verdictBadge = {
 };
 
 export default function HistoryPage() {
+  const { getToken } = useAuth();
   const [analyses, setAnalyses] = useState<Analysis[]>([]);
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState<number | null>(null);
 
   useEffect(() => {
-    getAnalyses()
-      .then(setAnalyses)
-      .catch(() => setAnalyses([]))
-      .finally(() => setLoading(false));
-  }, []);
+    const load = async () => {
+      const token = await getToken();
+      getAnalyses(token)
+        .then(setAnalyses)
+        .catch(() => setAnalyses([]))
+        .finally(() => setLoading(false));
+    };
+    load();
+  }, [getToken]);
 
   if (loading) {
     return <p className="text-sm text-gray-500">Loading history...</p>;

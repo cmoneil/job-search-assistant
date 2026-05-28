@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { useAuth } from "@clerk/nextjs";
 import { ProfileInput, parseResume } from "@/lib/api";
 
 interface Props {
@@ -9,6 +10,7 @@ interface Props {
 }
 
 export default function ProfileForm({ initial, onSave }: Props) {
+  const { getToken } = useAuth();
   const [form, setForm] = useState<ProfileInput>(
     initial ?? {
       name: "",
@@ -31,7 +33,8 @@ export default function ProfileForm({ initial, onSave }: Props) {
     setParsing(true);
     setError(null);
     try {
-      const parsed = await parseResume(file);
+      const token = await getToken();
+      const parsed = await parseResume(file, token);
       setForm(parsed);
       setSkillsRaw(parsed.skills.join(", "));
     } catch (err) {

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 
 const links = [
   { href: "/", label: "Analyze" },
@@ -29,6 +30,18 @@ export default function Nav() {
             {label}
           </Link>
         ))}
+        <div className="ml-auto">
+          <SignedIn>
+            <UserButton />
+          </SignedIn>
+          <SignedOut>
+            <SignInButton mode="modal">
+              <button className="text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors">
+                Sign in
+              </button>
+            </SignInButton>
+          </SignedOut>
+        </div>
       </div>
     </nav>
   );
