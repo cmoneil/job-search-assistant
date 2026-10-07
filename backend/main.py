@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import pypdf
 from models import ProfileBase, Profile, AnalysisRequest, AnalysisRecord
 from database import init_db, get_conn
-from agent import run_analysis, parse_resume
+from agent import run_analysis, parse_resume, InvalidInputError
 
 _jwks_client: PyJWKClient | None = None
 
@@ -68,8 +68,10 @@ async def parse_resume_endpoint(file: UploadFile = File(...), user_id: str = Dep
         text = content.decode("utf-8", errors="ignore")
     if not text.strip():
         raise HTTPException(status_code=400, detail="Could not extract text from file")
-    result = await parse_resume(text)
-    return result
+    try:
+        return await parse_resume(text)
+    except InvalidInputError as e:
+        raise HTTPException(status_code=422, detail=f"That doesn't look like a resume. {e}")
 
 
 @app.post("/profile", response_model=Profile)
@@ -104,7 +106,10 @@ async def analyze(request: AnalysisRequest, user_id: str = Depends(get_user)):
                 raise HTTPException(status_code=400, detail="Profile not set up yet. Visit /profile to create one.")
             profile = ProfileBase(**dict(row))
 
-    results = await run_analysis(request.job_description, profile)
+    try:
+        results = await run_analysis(request.job_description, profile)
+    except InvalidInputError as e:
+        raise HTTPException(status_code=422, detail=f"That doesn't look like a job description. {e}")
 
     if not results.get("generate_verdict"):
         raise HTTPException(status_code=500, detail="Analysis failed to produce a verdict")

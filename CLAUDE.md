@@ -35,7 +35,7 @@ The agent calls 4 tools in order: `analyze_stack_match` → `analyze_experience_
 
 Prompt caching: `cache_control: {"type": "ephemeral"}` on the system block caches both the tools list and system prompt together (tools render before system in the prefix).
 
-Model: `claude-sonnet-4-20250514`
+Model: `claude-sonnet-5-5`
 
 ### Frontend
 
